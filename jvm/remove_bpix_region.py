@@ -10,12 +10,13 @@ def remove_bpix_region(input_filename, output_filename):
     
     print(f"Opened input file: {input_filename}")
 
+    removeFrom = "jetvetomap_cold"
     # Retrieve the histograms
-    jetvetomap = input_file.Get("jetvetomap")
+    jetvetomap = input_file.Get(removeFrom)
     jetvetomap_bpix = input_file.Get("jetvetomap_bpix")
 
     if not jetvetomap:
-        print("Error: 'jetvetomap' histogram not found in the input file.")
+        print(f"Error: '{removeFrom}' histogram not found in the input file.")
         input_file.Close()
         sys.exit(1)
     
@@ -24,16 +25,16 @@ def remove_bpix_region(input_filename, output_filename):
         input_file.Close()
         sys.exit(1)
     
-    print("Retrieved 'jetvetomap' and 'jetvetomap_bpix' histograms.")
+    print(f"Retrieved '{removeFrom}' and 'jetvetomap_bpix' histograms.")
 
     # Clone the jetvetomap to modify it
-    modified_jetvetomap = jetvetomap.Clone("jetvetomap")
-    modified_jetvetomap.SetTitle("jetvetomap with BPix region removed")
+    modified_jetvetomap = jetvetomap.Clone(removeFrom)
+    modified_jetvetomap.SetTitle(f"{removeFrom} with BPix region removed")
 
     # Check that both histograms have the same binning
     if (jetvetomap.GetNbinsX() != jetvetomap_bpix.GetNbinsX() or
         jetvetomap.GetNbinsY() != jetvetomap_bpix.GetNbinsY()):
-        print("Error: 'jetvetomap' and 'jetvetomap_bpix' have different binning.")
+        print(f"Error: '{removeFrom}' and 'jetvetomap_bpix' have different binning.")
         input_file.Close()
         sys.exit(1)
     
@@ -50,7 +51,7 @@ def remove_bpix_region(input_filename, output_filename):
                 # Set the corresponding bin in jetvetomap to zero
                 modified_jetvetomap.SetBinContent(ix, iy, 0)
 
-    print("Removed BPix regions from 'jetvetomap'.")
+    print(f"Removed BPix regions from '{removeFrom}'.")
 
     # Open the output ROOT file
     output_file = ROOT.TFile.Open(output_filename, "RECREATE")
@@ -68,10 +69,10 @@ def remove_bpix_region(input_filename, output_filename):
     keys = input_file.GetListOfKeys()
     for key in keys:
         obj = key.ReadObj()
-        if obj.GetName() == "jetvetomap":
+        if obj.GetName() == removeFrom:
             # Write the modified jetvetomap
             modified_jetvetomap.Write()
-            print(f"Written modified 'jetvetomap' to output file.")
+            print(f"Written modified '{removeFrom}' to output file.")
         else:
             # Clone and write other histograms as-is
             obj_clone = obj.Clone()
