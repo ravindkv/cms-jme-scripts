@@ -11,9 +11,10 @@ def remove_bpix_region(input_filename, output_filename):
     print(f"Opened input file: {input_filename}")
 
     removeFrom = "jetvetomap_cold"
+    tobeRemoved = "jetvetomap_bpix"
     # Retrieve the histograms
     jetvetomap = input_file.Get(removeFrom)
-    jetvetomap_bpix = input_file.Get("jetvetomap_bpix")
+    jetvetomap_bpix = input_file.Get(tobeRemoved)
 
     if not jetvetomap:
         print(f"Error: '{removeFrom}' histogram not found in the input file.")
@@ -25,16 +26,17 @@ def remove_bpix_region(input_filename, output_filename):
         input_file.Close()
         sys.exit(1)
     
-    print(f"Retrieved '{removeFrom}' and 'jetvetomap_bpix' histograms.")
+    print(f"Retrieved '{removeFrom}' and {tobeRemoved} histograms.")
 
     # Clone the jetvetomap to modify it
     modified_jetvetomap = jetvetomap.Clone(removeFrom)
-    modified_jetvetomap.SetTitle(f"{removeFrom} with BPix region removed")
+    modified_jetvetomap.SetTitle(f"{removeFrom} with {tobeRemoved} removed")
+    modified_jetvetomap.SetDirectory(0)  # Detach from any ROOT directory
 
     # Check that both histograms have the same binning
     if (jetvetomap.GetNbinsX() != jetvetomap_bpix.GetNbinsX() or
         jetvetomap.GetNbinsY() != jetvetomap_bpix.GetNbinsY()):
-        print(f"Error: '{removeFrom}' and 'jetvetomap_bpix' have different binning.")
+        print(f"Error: '{removeFrom}' and {tobeRemoved} have different binning.")
         input_file.Close()
         sys.exit(1)
     
@@ -43,7 +45,7 @@ def remove_bpix_region(input_filename, output_filename):
 
     print(f"Histogram dimensions: X bins = {nbinsX}, Y bins = {nbinsY}")
 
-    # Loop over all bins and remove the BPix region
+    # Loop over all bins and remove the region
     for ix in range(1, nbinsX + 1):
         for iy in range(1, nbinsY + 1):
             bpix_content = jetvetomap_bpix.GetBinContent(ix, iy)
@@ -51,7 +53,7 @@ def remove_bpix_region(input_filename, output_filename):
                 # Set the corresponding bin in jetvetomap to zero
                 modified_jetvetomap.SetBinContent(ix, iy, 0)
 
-    print(f"Removed BPix regions from '{removeFrom}'.")
+    print(f"Removed {tobeRemoved} from '{removeFrom}'.")
 
     # Open the output ROOT file
     output_file = ROOT.TFile.Open(output_filename, "RECREATE")
@@ -69,21 +71,29 @@ def remove_bpix_region(input_filename, output_filename):
     keys = input_file.GetListOfKeys()
     for key in keys:
         obj = key.ReadObj()
-        if obj.GetName() == removeFrom:
+        obj_name = obj.GetName()
+        obj_class = obj.IsA().GetName()
+
+        if obj_name == removeFrom:
             # Write the modified jetvetomap
             modified_jetvetomap.Write()
             print(f"Written modified '{removeFrom}' to output file.")
-        else:
-            # Clone and write other histograms as-is
-            obj_clone = obj.Clone()
+        elif obj.InheritsFrom("TH1") or obj.InheritsFrom("TH2") or obj.InheritsFrom("TH3"):
+            # Handle histogram objects
+            obj_clone = obj.Clone(obj_name)
+            obj_clone.SetDirectory(0)  # Detach from any ROOT directory
             obj_clone.Write()
-            print(f"Written '{obj.GetName()}' to output file.")
-    
+            print(f"Written '{obj_name}' as '{obj.GetName()}' to output file.")
+        else:
+            # For non-histogram objects (e.g., directories), write them as-is
+            obj.Write()
+            print(f"Written non-histogram object '{obj_name}' to output file.")
+
     # Close the files
     output_file.Close()
     input_file.Close()
 
-    print("All histograms have been written to the output file successfully.")
+    print("All histograms and objects have been written to the output file successfully.")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
