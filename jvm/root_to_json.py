@@ -73,7 +73,7 @@ def get_content(veto_map_path: str, histogram_name: str) -> MultiBinning:
                     y_edges_list,
                 ],
                 "content": values,
-                "flow": "error",
+                "flow": "0.0",
             })
 
             return multi_binning
@@ -226,7 +226,8 @@ def main():
     """
     # Define veto maps
     veto_maps = [
-        "Summer23BPixPrompt23_RunD_v1",
+        "Summer24Prompt24_RunBCDEFGHI",
+        #"Summer23BPixPrompt23_RunD_v1",
         # "Winter24Prompt24_RunF",
     ]
 
