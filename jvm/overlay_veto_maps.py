@@ -89,7 +89,7 @@ class PlotVetoMaps:
             # ('qie11',      'jetvetomap_qie11'),
             # ('bpix',       'jetvetomap_bpix'),
             #('fpix', 'jetvetomap_fpix'),
-            ('all', 'jetvetomap_all'),
+            #('all', 'jetvetomap_all'),
         ])
 
         # Create output directory
@@ -377,7 +377,8 @@ def main():
         #{'year': 'Summer22EERun3', 'file_name': 'Summer22EE_23Sep2023_RunEFG','file_version': 'v1', 'lumi_info': '2022, 27 fb^{-1}'},
         #{'year': 'Summer23Run3', 'file_name': 'Summer23Prompt23_RunC','file_version': 'v1', 'lumi_info': '2023, 18 fb^{-1}'},
         #{'year': 'Summer23BPixRun3', 'file_name': 'Summer23BPixPrompt23_RunD','file_version': 'v1', 'lumi_info': '2023, 9 fb^{-1}'},
-        {'year': 'Winter24Prompt24', 'file_name': 'Winter24Prompt24_2024BCDEFGHI', 'file_version': 'v1_tmp', 'lumi_info': '2024 RunBtoI, 109 fb^{-1}'},
+        #{'year': 'Winter24Prompt24', 'file_name': 'Winter24Prompt24_2024BCDEFGHI', 'file_version': 'v1_tmp', 'lumi_info': '2024 RunBtoI, 109 fb^{-1}'},
+        {'year': 'Summer24Prompt24', 'file_name': 'Summer24Prompt24_RunBCDEFGHI', 'file_version': 'V1', 'lumi_info': '2024 RunBtoI, 109 fb^{-1}'},
        #  {'year': 'Summer20UL18', 'file_name': 'hotjets-UL18',       'file_version': 'v1', 'lumi_info': '2018, 59.8 fb^{-1}'},
        #  {'year': 'Summer20UL17', 'file_name': 'hotjets-UL17',       'file_version': 'v1', 'lumi_info': '2017, 41.5 fb^{-1}'},
        #  {'year': 'Summer20UL16APV', 'file_name': 'hotjets-UL16',       'file_version': 'v1', 'lumi_info': '2016, 36.3 fb^{-1}'},
